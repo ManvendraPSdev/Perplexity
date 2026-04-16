@@ -9,6 +9,7 @@ const chatSchema = new mongoose.Schema({
     title : {
         type : Stirng , 
         require: [true , "title of the chat is required"] , 
+        default : "New Chat" ,
         trim : true
     }
 } , {
