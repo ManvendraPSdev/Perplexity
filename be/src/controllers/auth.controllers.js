@@ -21,6 +21,10 @@ const registerController = async (req , res)=>{
             password
         }) ; 
 
+        const enailVerificationToken = jwt.sign({
+            email : user.email
+        } , process.env.JWT_SECRET)
+
         try {
             await sendEmail({
                 to: email,
@@ -41,12 +45,12 @@ const registerController = async (req , res)=>{
                         </p>
             
                         <p style="font-size: 16px; color: #555;">
-                            Dive in and start discovering powerful features designed to boost your productivity and creativity.
+                            Verify and start discovering powerful features designed to boost your productivity and creativity.
                         </p>
             
                         <div style="text-align: center; margin: 30px 0;">
-                            <a href="#" style="background-color: #4f46e5; color: #ffffff; padding: 12px 20px; text-decoration: none; border-radius: 6px; font-weight: bold;">
-                                Get Started
+                            <a href="http://localhost:3000/api/auth/verify-email?token=${enailVerificationToken}" style="background-color: #4f46e5; color: #ffffff; padding: 12px 20px; text-decoration: none; border-radius: 6px; font-weight: bold;">
+                                Verify
                             </a>
                         </div>
             
@@ -91,8 +95,28 @@ const registerController = async (req , res)=>{
     }
 }
 
-// const loginController = async (req , res)=>{
+const verifyEmailController = async (req , res)=>{
+    const {token} = req.query ; 
 
-// }
+    const decoded = await jwt.verify(token , process.env.JWT_SECRET) ; 
+    const user = await userModel.findOne({email : decoded.email}) ; 
 
-export {registerController}
+    if(!user){
+        return res.status(404).json({
+            message : "Invalid token" , 
+            sucess : false ,
+            err : "user not found !!"
+        })
+    }
+
+    user.verified = true ; 
+
+    await user.save() ; 
+
+    res.send(`
+        <h1>Email verified sucessfully</h1>
+        <p>Your email has been verified , you can now login into your acount</p>
+    `)
+}
+
+export {registerController , verifyEmailController}
