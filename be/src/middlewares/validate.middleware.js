@@ -6,10 +6,10 @@ const validate = (req , res , next)=>{
         return next() ; 
     }
 
-    const extracted = result.array().map((err)=>{
-        field : err.path || err.param
-        message : err.message
-    })
+    const extracted = result.array().map((err)=>({
+        field : err.path || err.param,
+        message : err.msg
+    }))
 
     return res.status(400).json({
         validate : "failed" , 

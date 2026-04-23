@@ -6,3 +6,4 @@ import { register } from "../validators/auth.validator.js";
 export const authRouter = express.Router() ; 
 
 authRouter.post("/register" , register , validate , registerController) ; 
+// authRouter.post("/login")
