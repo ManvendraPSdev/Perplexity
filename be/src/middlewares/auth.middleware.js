@@ -22,3 +22,5 @@ async function authenticate(req , res , next){
         })
     }
 }
+
+export {authenticate}

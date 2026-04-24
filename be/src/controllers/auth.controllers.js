@@ -191,4 +191,4 @@ const getMeController = async(req , res)=>{
     })
 }
 
-export {registerController , verifyEmailController , loginController}
+export {registerController , verifyEmailController , loginController , getMeController}
