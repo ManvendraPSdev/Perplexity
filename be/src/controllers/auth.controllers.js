@@ -175,8 +175,14 @@ const loginController = async(req , res)=>{
 
 }
 
+
+/**
+ * @route GET /api/auth/getMe
+ * @desc getMe 
+ * @acess Private
+ */
 const getMeController = async(req , res)=>{
-    const user = await userModel.findOne(req.user.id) ; 
+    const user = await userModel.findById(req.user.id) ; 
     console.log(user) ; 
 
     if(!user){
