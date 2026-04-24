@@ -28,3 +28,13 @@ export async function login({userName , email}){
         throw error ; 
     }
 }
+
+export async function getMe(){
+    try {
+        const response = await api.get("/getMe") ; 
+        return response.data ; 
+    } catch (error) {
+        console.log(error) ; 
+        throw error ; 
+    }
+}
