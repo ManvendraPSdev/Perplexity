@@ -175,4 +175,20 @@ const loginController = async(req , res)=>{
 
 }
 
+const getMeController = async(req , res)=>{
+    const user = await userModel.findOne(req.user.id) ; 
+    console.log(user) ; 
+
+    if(!user){
+        return res.status(404).json({
+            message : "user not found !!"
+        })
+    } ; 
+
+    return res.status(200).json({
+        message : "User details fetched successfully",
+        user
+    })
+}
+
 export {registerController , verifyEmailController , loginController}
