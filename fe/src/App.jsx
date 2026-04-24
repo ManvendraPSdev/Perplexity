@@ -1,8 +1,9 @@
 import React from 'react'
+import { AppRoutes } from './AppRoutes'
 
 const App = () => {
   return (
-    <div className='bg-red-400 text-bold'>App</div>
+    <AppRoutes/>
   )
 }
 
