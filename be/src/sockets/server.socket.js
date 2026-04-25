@@ -5,7 +5,7 @@ let io  ; //  the socket.io server is been represented by this io
 export function initSocket(httpServer){
     io = new Server(httpServer , {
         cors : {
-            origin : "http://localhost:5173" ,
+            origin : "http://localhost:5173" , // FrontEnd URL
             credentials : true
         }
     })

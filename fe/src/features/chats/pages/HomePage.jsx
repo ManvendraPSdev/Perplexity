@@ -1,4 +1,6 @@
-import React from "react";
+import React, { useEffect } from "react";
+import { useChat } from "../hooks/useChat";
+import { initializedSocketConnection } from "../services/chat.socket";
 
 const menuIcon = (
   <svg viewBox="0 0 24 24" fill="none" className="h-4 w-4 text-white">
@@ -158,6 +160,13 @@ function Footer() {
 }
 
 export default function HomePage() {
+
+  const chat = useChat()
+
+  useEffect(()=>{
+    chat.initializedSocketConnection()
+  } , [])
+
   const featureBlocks = [
     {
       title: "Real-time answers",

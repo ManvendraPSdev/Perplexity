@@ -4,8 +4,8 @@ import { useEffect } from "react";
 import { useSelector } from "react-redux";
 import Login from "./features/auth/pages/Login";
 import Register from "./features/auth/pages/Register";
-import HomePage from "./pages/HomePage";
 import { useAuth } from "./features/auth/hooks/useAuth";
+import HomePage from "./features/chats/pages/HomePage";
 
 function AuthBootstrap() {
     const { user } = useSelector((state) => state.auth);
