@@ -23,8 +23,7 @@ const registerController = async (req , res)=>{
         const user = await userModel.create({
             userName , 
             email , 
-            password,
-            verified: true
+            password
         }) ; 
 
         const enailVerificationToken = jwt.sign({
@@ -159,6 +158,14 @@ const loginController = async(req , res)=>{
                 message : "Invalid email or password" , 
                 sucess : false , 
                 err : "incorrect password"
+            })
+        }
+
+        if(!user.verified){
+            return res.status(403).json({
+                message : "verification incomplete" , 
+                sucess : false ,
+                err : "please verify your email before logging in"
             })
         }
 
