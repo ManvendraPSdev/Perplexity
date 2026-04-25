@@ -1,17 +1,25 @@
 import { useState } from "react";
-import { useNavigate } from "react-router";
+import { useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
+import { useAuth } from "../hooks/useAuth";
 
 export default function Login() {
   const navigate = useNavigate();
+  const { handelLogin } = useAuth();
+  const { loading, error } = useSelector((state) => state.auth);
   const [form, setForm] = useState({ email: "", password: "" });
 
   const handleChange = (e) =>
     setForm({ ...form, [e.target.name]: e.target.value });
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // TODO: connect to your auth API
-    console.log("Login:", form);
+    try {
+      await handelLogin(form);
+      navigate("/");
+    } catch (authError) {
+      console.error("Login failed:", authError?.message);
+    }
   };
 
   return (
@@ -99,11 +107,16 @@ export default function Login() {
 
             <button
               type="submit"
+              disabled={loading}
               className="w-full py-2.5 rounded-xl text-sm font-medium text-white transition-opacity hover:opacity-90 active:scale-95"
               style={{ background: "linear-gradient(135deg, #1e3a8a, #2563eb)" }}>
-              Sign in
+              {loading ? "Signing in..." : "Sign in"}
             </button>
           </form>
+
+          {error ? (
+            <p className="mt-3 text-xs text-red-400">{error}</p>
+          ) : null}
 
           <div className="relative my-5">
             <div className="absolute inset-0 flex items-center">

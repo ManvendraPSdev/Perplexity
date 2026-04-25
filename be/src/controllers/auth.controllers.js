@@ -23,7 +23,8 @@ const registerController = async (req , res)=>{
         const user = await userModel.create({
             userName , 
             email , 
-            password
+            password,
+            verified: true
         }) ; 
 
         const enailVerificationToken = jwt.sign({
@@ -139,39 +140,54 @@ const verifyEmailController = async (req , res)=>{
  * @acess Public
  */
 const loginController = async(req , res)=>{
-    const {userName , email , password} = req.body ; 
+    try {
+        const { email , password } = req.body ; 
 
-    const user = await userModel.findOne({email}) ; 
+        const user = await userModel.findOne({email}) ; 
 
-    if(!user){
-        return res.status(404).json({
-            message : "Invalid email or password" , 
-            sucess : false , 
-            err : "user not found"
-        })
-    }
-
-    if(!user.verified){
-        return res.status(400).json({
-            message : "please verify your email before logging in" , 
-            sucess : false ,
-            err : "user is not verified"
-        })
-    }
-
-    const token = jwt.sign({id : user._id , userName : user.userName , email : user.email} , process.env.JWT_SECRET , {expiresIn : '7d'}) ; 
-
-    await res.cookie("token" , token) ; 
-
-    return res.status(200).json({
-        message : "user logged in sucessfully" , 
-        sucess : true ,
-        user : {
-            id : user._id , 
-            name : user.userName , 
-            email : user.email
+        if(!user){
+            return res.status(404).json({
+                message : "Invalid email or password" , 
+                sucess : false , 
+                err : "user not found"
+            })
         }
-    })
+
+        const isPasswordValid = await user.comparePassword(password)
+        if(!isPasswordValid){
+            return res.status(401).json({
+                message : "Invalid email or password" , 
+                sucess : false , 
+                err : "incorrect password"
+            })
+        }
+
+        const token = jwt.sign({id : user._id , userName : user.userName , email : user.email} , process.env.JWT_SECRET , {expiresIn : '7d'}) ; 
+
+        const cookieOptions = {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === "production",
+            sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+            maxAge: 7 * 24 * 60 * 60 * 1000,
+        };
+    
+        res.cookie("token" , token , cookieOptions) ; 
+
+        return res.status(200).json({
+            message : "user logged in sucessfully" , 
+            sucess : true ,
+            user : {
+                id : user._id , 
+                userName : user.userName , 
+                email : user.email
+            }
+        })
+    } catch (error) {
+        console.error("Login failed:", error.message);
+        return res.status(500).json({
+            message: "Unable to login right now",
+        });
+    }
 
 }
 
@@ -182,19 +198,25 @@ const loginController = async(req , res)=>{
  * @acess Private
  */
 const getMeController = async(req , res)=>{
-    const user = await userModel.findById(req.user.id) ; 
-    console.log(user) ; 
-
-    if(!user){
-        return res.status(404).json({
-            message : "user not found !!"
+    try {
+        const user = await userModel.findById(req.user.id).select("-password") ; 
+    
+        if(!user){
+            return res.status(404).json({
+                message : "user not found !!"
+            })
+        } ; 
+    
+        return res.status(200).json({
+            message : "User details fetched successfully",
+            user
         })
-    } ; 
-
-    return res.status(200).json({
-        message : "User details fetched successfully",
-        user
-    })
+    } catch (error) {
+        console.error("getMe failed:", error.message);
+        return res.status(500).json({
+            message: "Unable to fetch user details",
+        });
+    }
 }
 
 export {registerController , verifyEmailController , loginController , getMeController}

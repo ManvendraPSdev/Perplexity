@@ -1,17 +1,25 @@
 import { useState } from "react";
-import { useNavigate } from "react-router";
+import { useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
+import { useAuth } from "../hooks/useAuth";
 
 export default function Register() {
   const navigate = useNavigate();
-  const [form, setForm] = useState({ name: "", email: "", password: "" });
+  const { handelRegister } = useAuth();
+  const { loading, error } = useSelector((state) => state.auth);
+  const [form, setForm] = useState({ userName: "", email: "", password: "" });
 
   const handleChange = (e) =>
     setForm({ ...form, [e.target.name]: e.target.value });
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // TODO: connect to your auth API
-    console.log("Register:", form);
+    try {
+      await handelRegister(form);
+      navigate("/login");
+    } catch (authError) {
+      console.error("Register failed:", authError?.message);
+    }
   };
 
   const inputStyle = {
@@ -59,8 +67,8 @@ export default function Register() {
               </label>
               <input
                 type="text"
-                name="name"
-                value={form.name}
+                name="userName"
+                value={form.userName}
                 onChange={handleChange}
                 placeholder="Your name"
                 required
@@ -109,11 +117,16 @@ export default function Register() {
 
             <button
               type="submit"
+              disabled={loading}
               className="w-full py-2.5 rounded-xl text-sm font-medium text-white transition-opacity hover:opacity-90 active:scale-95 mt-2"
               style={{ background: "linear-gradient(135deg, #1e3a8a, #2563eb)" }}>
-              Create account
+              {loading ? "Creating..." : "Create account"}
             </button>
           </form>
+
+          {error ? (
+            <p className="mt-3 text-xs text-red-400">{error}</p>
+          ) : null}
 
           <p className="text-center text-xs mt-4" style={{ color: "rgba(255,255,255,0.2)" }}>
             By signing up you agree to our Terms of Service and Privacy Policy

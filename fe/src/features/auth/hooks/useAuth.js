@@ -7,9 +7,12 @@ export function useAuth(){
     async function handelRegister({userName , email , password}){
         try {
             dispatch(setLoading(true)) ; 
+            dispatch(setError(null)) ; 
             const data = await register({userName , email , password}) ; 
+            return data;
         } catch (error) {
             dispatch(setError(error.response?.data?.message || "Registration failed"))
+            throw error;
         }finally{
             dispatch(setLoading(false)) ; 
         }
@@ -18,10 +21,13 @@ export function useAuth(){
     async function handelLogin({email , password}){
         try {
             dispatch(setLoading(true)) ; 
+            dispatch(setError(null)) ; 
             const data = await login({email , password}) ; 
             dispatch(setUser(data.user)) ; 
+            return data;
         } catch (error) {
             dispatch(setError(error.response?.data?.message || "Login Failed")) ; 
+            throw error;
         }finally{
             dispatch(setLoading(false)) ; 
         }
@@ -30,10 +36,13 @@ export function useAuth(){
     async function handelGetMe(){
         try {
             dispatch(setLoading(true)) 
+            dispatch(setError(null)) ; 
             const data = await getMe() ; 
             dispatch(setUser(data.user)) ; 
+            return data;
         } catch (error) {
-            dispatch(setError(error.response?.data?.message || "Failed to fetch user")) ; 
+            dispatch(setError(error.response?.data?.message || "Failed to fetch user")) ;
+            throw error;
         }finally{
             dispatch(setLoading(false))
         }

@@ -17,10 +17,11 @@ export async function register({userName , email , password}){
     }
 }
 
-export async function login({userName , email}){
+export async function login({email , password}){
     try {
         const response = await api.post("/login" , {
-            userName , email
+            email,
+            password
         })
         return response.data ; 
     } catch (error) {
