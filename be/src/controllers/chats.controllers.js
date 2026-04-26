@@ -86,4 +86,23 @@ async function getMessages(req , res){
         messages
     })
 }
-export {sendMessageController , getChats , getMessages}
+
+async function deleteChats(req , res){
+    const {chatId} = req.params ; 
+
+    const chats = await chatModel.findOneAndDelete({_id : chatId , user : req.user.id})  ;
+    await messageModel.deleteMany({chat : chatId}) ; 
+
+    if(!chats){
+        return res.status(400).json({
+            message : "Chats not found !"
+        })
+    }
+
+    return res.status(200).json({
+        messages : "Chats deleted sucessfully" , 
+
+    })
+}
+
+export {sendMessageController , getChats , getMessages , deleteChats}
