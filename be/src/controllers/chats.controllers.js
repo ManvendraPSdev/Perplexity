@@ -3,9 +3,8 @@ import messageModel from "../models/message.js";
 import {aiResponse, generateTitle} from "../services/ai.services.js";
 
 const sendMessageController = async (req , res)=>{
-    try {
-        const {message} = req.body ; 
-        const userId = req.user.id ;  
+        const {message , chat : chatId} = req.body ; 
+        const userId = req.user.id
 
         if(!message || !String(message).trim()){
             return res.status(400).json({
@@ -19,36 +18,41 @@ const sendMessageController = async (req , res)=>{
             });
         }
 
-        const result = await aiResponse(message) ; 
-        let chatTitle = "New Chat";
-        try {
+        let chatTitle = null ;
+        let chat = null ; 
+
+        if(!chatId){
             chatTitle = await generateTitle(message) ; 
-        } catch (titleError) {
-            console.error("generateTitle failed:", titleError.message);
+            chat = await chatModel.create({
+                user : userId , 
+                title : chatTitle
+            })
         }
 
-        const chat = await chatModel.create({
-            user : userId , 
-            title : chatTitle
+        const userMessage = await messageModel.create({
+            chat :  chatId || chat._id , 
+            content : message , 
+            role : "user"
         })
 
-        const AI_Message = await messageModel({
-            chatID : chat._id , 
+        const messages = await messageModel.find({chat : chatId}) ; 
+        console.log(messages) ;
+
+        const result = await aiResponse(messages) ; 
+        
+
+        const AI_Message = await messageModel.create({
+            chat : chatId || chat._id , 
             content : result , 
             role : "ai"
         })
 
+        console.log(messages) ; 
         return res.status(200).json({
             title : chatTitle , 
             chat, 
-            AI_Message
+            userMessage : userMessage.content ,
+            AI_Message : AI_Message.content
         })
-    } catch (error) {
-        console.error("sendMessage failed:", error.message);
-        return res.status(500).json({
-            message: "Unable to get AI response",
-        });
     }
-
-}
 export {sendMessageController}

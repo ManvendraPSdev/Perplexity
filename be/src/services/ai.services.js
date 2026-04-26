@@ -1,7 +1,7 @@
 import 'dotenv/config';
 import { ChatGoogleGenerativeAI } from "@langchain/google-genai";
 import {ChatMistralAI} from "@langchain/mistralai"
-import {HumanMessage, SystemMessage} from "langchain"
+import {HumanMessage, SystemMessage , AIMessage} from "langchain"
 
 const gemini_model = new ChatGoogleGenerativeAI({
   model: "gemini-2.5-flash-lite",
@@ -13,26 +13,31 @@ const mistral_model = new ChatMistralAI({
   apiKey : process.env.MISTRAL_API_KEY
 })
 
- export const aiResponse = async (message)=>{
-    const response = await gemini_model.invoke([
-      new HumanMessage(message)
-    ]) ; 
-    if (typeof response?.text === "string" && response.text.trim()) {
-      return response.text;
-    }
+ export const aiResponse = async (messages)=>{
+    const response = await gemini_model.invoke(messages.map(msg=>{
+      if(msg.role=="user"){
+        return new HumanMessage(msg.content) ; 
+      }
+      else if(msg.role == "ai"){
+        return new AIMessage(msg.content) ; 
+      }
+    })) ; 
+    // if (typeof response?.text === "string" && response.text.trim()) {
+    //   return response.text;
+    // }
 
-    if (typeof response?.content === "string" && response.content.trim()) {
-      return response.content;
-    }
+    // if (typeof response?.content === "string" && response.content.trim()) {
+    //   return response.content;
+    // }
 
-    if (Array.isArray(response?.content)) {
-      return response.content
-        .map((item) => (typeof item === "string" ? item : item?.text || ""))
-        .join("")
-        .trim();
-    }
+    // if (Array.isArray(response?.content)) {
+    //   return response.content
+    //     .map((item) => (typeof item === "string" ? item : item?.text || ""))
+    //     .join("")
+    //     .trim();
+    // }
 
-    return "";
+    return response.text;
  }
 
 export const generateTitle = async(message)=>{
