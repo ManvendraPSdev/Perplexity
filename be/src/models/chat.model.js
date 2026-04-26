@@ -7,7 +7,7 @@ const chatSchema = new mongoose.Schema({
         require : [true , "ref of the user is required"]
     } , 
     title : {
-        type : Stirng , 
+        type : String , 
         require: [true , "title of the chat is required"] , 
         default : "New Chat" ,
         trim : true
