@@ -55,4 +55,35 @@ const sendMessageController = async (req , res)=>{
             AI_Message : AI_Message.content
         })
     }
-export {sendMessageController}
+
+async function getChats(req , res){
+    const user = req.user ; 
+    const chats = await chatModel.find({user : user.id}) ; 
+    return res.status(200).json({
+        message : "chat received sucessfully" , 
+        chats
+    })
+}
+
+async function getMessages(req , res){
+    const {chatId} = req.params ; 
+
+    const chat = await chatModel.findOne({
+        _id : chatId , 
+        user : req.user.id
+    })
+
+    if(!chat){
+        return res.status(400).json({
+            message : "chats not found !!"
+        })
+    }
+
+    const messages = await messageModel.find({chat : chatId}) ; 
+
+    return res.status(200).json({
+        message : "chats fetched sucessfully " , 
+        messages
+    })
+}
+export {sendMessageController , getChats , getMessages}
