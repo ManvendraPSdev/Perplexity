@@ -1,4 +1,4 @@
-import {aiResponse} from "../services/ai.services.js";
+import {aiResponse, generateTitle} from "../services/ai.services.js";
 
 const sendMessageController = async (req , res)=>{
     try {
@@ -11,7 +11,13 @@ const sendMessageController = async (req , res)=>{
         }
 
         const result = await aiResponse(message) ; 
-        return res.status(200).json({response : result})
+        let chatTitle = "New Chat";
+        try {
+            chatTitle = await generateTitle(message) ; 
+        } catch (titleError) {
+            console.error("generateTitle failed:", titleError.message);
+        }
+        return res.status(200).json({title : chatTitle , response : result})
     } catch (error) {
         console.error("sendMessage failed:", error.message);
         return res.status(500).json({
