@@ -1,6 +1,6 @@
 import { useDispatch } from "react-redux";
-import { register , login , getMe } from "../services/auth.api";
-import { setUser , setError , setLoading } from "../auth.slice";
+import { register , login , getMe, logout } from "../services/auth.api";
+import { setUser , setError , setLoading } from "../state/auth.slice.js";
 
 export function useAuth(){
     const dispatch = useDispatch() ; 
@@ -48,9 +48,24 @@ export function useAuth(){
         }
     }
 
+    async function handelLogout(){
+        try {
+            dispatch(setLoading(true));
+            dispatch(setError(null));
+            await logout();
+            dispatch(setUser(null));
+        } catch (error) {
+            dispatch(setError(error.response?.data?.message || "Logout failed"));
+            throw error;
+        } finally {
+            dispatch(setLoading(false));
+        }
+    }
+
     return{
         handelRegister , 
         handelLogin , 
-        handelGetMe
+        handelGetMe,
+        handelLogout
     }
 }

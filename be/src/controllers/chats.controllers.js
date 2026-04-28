@@ -29,20 +29,22 @@ const sendMessageController = async (req , res)=>{
             })
         }
 
+        const resolvedChatId = chatId || chat._id;
+
         const userMessage = await messageModel.create({
-            chat :  chatId || chat._id , 
+            chat : resolvedChatId,
             content : message , 
             role : "user"
         })
 
-        const messages = await messageModel.find({chat : chatId}) ; 
+        const messages = await messageModel.find({ chat: resolvedChatId }).sort({ createdAt: 1 });
         console.log(messages) ;
 
         const result = await aiResponse(messages) ; 
         
 
         const AI_Message = await messageModel.create({
-            chat : chatId || chat._id , 
+            chat : resolvedChatId,
             content : result , 
             role : "ai"
         })

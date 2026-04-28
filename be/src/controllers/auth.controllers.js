@@ -226,4 +226,14 @@ const getMeController = async(req , res)=>{
     }
 }
 
-export {registerController , verifyEmailController , loginController , getMeController}
+const logoutController = async (req, res) => {
+    const cookieOptions = {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+    };
+    res.clearCookie("token", cookieOptions);
+    return res.status(200).json({ message: "Logged out" });
+};
+
+export {registerController , verifyEmailController , loginController , getMeController , logoutController}
