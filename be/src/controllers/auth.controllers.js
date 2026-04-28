@@ -54,7 +54,7 @@ const registerController = async (req , res)=>{
                         </p>
             
                         <div style="text-align: center; margin: 30px 0;">
-                            <a href="http://localhost:3000/api/auth/verify-email?token=${enailVerificationToken}" style="background-color: #4f46e5; color: #ffffff; padding: 12px 20px; text-decoration: none; border-radius: 6px; font-weight: bold;">
+                            <a href="${process.env.BACKEND_URL || "http://localhost:3000"}/api/auth/verify-email?token=${enailVerificationToken}" style="background-color: #4f46e5; color: #ffffff; padding: 12px 20px; text-decoration: none; border-radius: 6px; font-weight: bold;">
                                 Verify
                             </a>
                         </div>
