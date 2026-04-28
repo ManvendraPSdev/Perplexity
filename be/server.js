@@ -13,6 +13,28 @@ initSocket(httpServer) ;
 
 connectedToDB() ; 
 
+function printRegisteredRoutes() {
+    const stack = app?._router?.stack || [];
+    const routes = [];
+
+    for (const layer of stack) {
+        if (!layer.route?.path) continue;
+        const methods = Object.keys(layer.route.methods || {}).map((method) =>
+            method.toUpperCase()
+        );
+        for (const method of methods) {
+            routes.push(`${method} ${layer.route.path}`);
+        }
+    }
+
+    console.log("Registered app routes:", routes.length ? routes : [
+        "USE /api/auth",
+        "USE /api/chats",
+    ]);
+}
+
 httpServer.listen(PORT , ()=>{
+    printRegisteredRoutes();
+    console.log("Registered router mounts: USE /api/auth, USE /api/chats");
     console.log(`server is running on PORT ${PORT}`) ; 
 })

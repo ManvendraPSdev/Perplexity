@@ -5,7 +5,7 @@ async function authenticate(req , res , next){
     const token = req.cookies.token ; 
 
     if(!token){
-        return res.status(404).json({
+        return res.status(401).json({
             message : "unauthorized" , 
             sucess : false , 
             err : "No token provided"
@@ -19,7 +19,7 @@ async function authenticate(req , res , next){
         next() ; 
     } catch (error) {
         console.log(error.message) ; 
-        return res.status(400).json({
+        return res.status(401).json({
             message : "unAuthorised" , 
             sucess : false ,
             err : "Invalid token"

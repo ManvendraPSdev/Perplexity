@@ -2,6 +2,13 @@ import userModel from "../models/user.model.js";
 import jwt from "jsonwebtoken" ; 
 import { sendEmail } from "../services/mail.service.js";
 
+const shouldUseSecureCookie = () => {
+    const nodeEnv = String(process.env.NODE_ENV || "").toLowerCase();
+    if (nodeEnv === "production") return true;
+    if (process.env.RENDER) return true;
+    return String(process.env.CLIENT_URL || "").startsWith("https://");
+};
+
 /**
  * @route POST /api/auth/register
  * @desc register user
@@ -171,11 +178,13 @@ const loginController = async(req , res)=>{
 
         const token = jwt.sign({id : user._id , userName : user.userName , email : user.email} , process.env.JWT_SECRET , {expiresIn : '7d'}) ; 
 
+        const isSecureCookie = shouldUseSecureCookie();
         const cookieOptions = {
             httpOnly: true,
-            secure: process.env.NODE_ENV === "production",
-            sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+            secure: isSecureCookie,
+            sameSite: isSecureCookie ? "none" : "lax",
             maxAge: 7 * 24 * 60 * 60 * 1000,
+            path: "/",
         };
     
         res.cookie("token" , token , cookieOptions) ; 
@@ -227,10 +236,12 @@ const getMeController = async(req , res)=>{
 }
 
 const logoutController = async (req, res) => {
+    const isSecureCookie = shouldUseSecureCookie();
     const cookieOptions = {
         httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+        secure: isSecureCookie,
+        sameSite: isSecureCookie ? "none" : "lax",
+        path: "/",
     };
     res.clearCookie("token", cookieOptions);
     return res.status(200).json({ message: "Logged out" });
