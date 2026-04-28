@@ -1,7 +1,7 @@
 // For managing this function we will use the hooks
 
 import {io} from "socket.io-client" ; 
-import { SOCKET_BASE_URL } from "../../../config/api";
+import { SOCKET_BASE_URL } from "../../../config/api.js";
 
 export const initializedSocketConnection = ()=>{
     const socket = io(SOCKET_BASE_URL , {

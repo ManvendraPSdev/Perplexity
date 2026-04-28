@@ -1,8 +1,8 @@
 import axios from "axios";
-import { API_BASE_URL } from "../../../config/api";
+import { SOCKET_BASE_URL } from "../../../config/api";
 
 const api = axios.create({
-    baseURL : `${API_BASE_URL}/api/auth` , 
+    baseURL : `${SOCKET_BASE_URL}/api/auth` , 
     withCredentials : true
 }) ; 
 
