@@ -1,14 +1,8 @@
-import axios from "axios";
-import { SOCKET_BASE_URL } from "../../../config/api";
-
-const api = axios.create({
-    baseURL : `${SOCKET_BASE_URL}/api/auth` , 
-    withCredentials : true
-}) ; 
+import API from "../../../config/apiClient";
 
 export async function register({userName , email , password}){
     try {
-        const response = await api.post("/register" , {
+        const response = await API.post("/api/auth/register" , {
             userName , email , password
         })
         return response.data ; 
@@ -20,7 +14,7 @@ export async function register({userName , email , password}){
 
 export async function login({email , password}){
     try {
-        const response = await api.post("/login" , {
+        const response = await API.post("/api/auth/login" , {
             email,
             password
         })
@@ -33,7 +27,7 @@ export async function login({email , password}){
 
 export async function getMe(){
     try {
-        const response = await api.get("/getMe") ; 
+        const response = await API.get("/api/auth/getMe") ; 
         return response.data ; 
     } catch (error) {
         console.log(error) ; 
@@ -43,7 +37,7 @@ export async function getMe(){
 
 export async function logout(){
     try {
-        const response = await api.post("/logout") ; 
+        const response = await API.post("/api/auth/logout") ; 
         return response.data ; 
     } catch (error) {
         console.log(error) ; 

@@ -7,11 +7,9 @@ const app = express() ;
 
 const allowedOrigins = [
     "http://localhost:5173",
-    "http://127.0.0.1:5173",
+    "http://localhost:3000",
     "https://perplexity-liart.vercel.app",
-    ...(process.env.CORS_ORIGIN
-        ? process.env.CORS_ORIGIN.split(",").map((origin) => origin.trim()).filter(Boolean)
-        : []),
+    process.env.CLIENT_URL,
 ];
 
 const normalizeOrigin = (origin) => origin?.replace(/\/$/, "");
@@ -22,13 +20,16 @@ app.use(cors({
         if (!origin) return callback(null, true);
 
         const isAllowed = allowedOrigins.some(
-            (allowedOrigin) => normalizeOrigin(allowedOrigin) === normalizeOrigin(origin)
+            (allowedOrigin) =>
+                allowedOrigin && normalizeOrigin(allowedOrigin) === normalizeOrigin(origin)
         );
 
         if (isAllowed) return callback(null, true);
         return callback(new Error("Not allowed by CORS"));
     },
     credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
 }));
 app.use(express.json()) ; 
 app.use(cookieParser()) ; 

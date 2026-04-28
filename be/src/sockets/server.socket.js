@@ -5,16 +5,14 @@ let io  ; //  the socket.io server is been represented by this io
 export function initSocket(httpServer){
     const allowedOrigins = [
         "http://localhost:5173",
-        "http://127.0.0.1:5173",
+        "http://localhost:3000",
         "https://perplexity-liart.vercel.app",
-        ...(process.env.CORS_ORIGIN
-            ? process.env.CORS_ORIGIN.split(",").map((origin) => origin.trim()).filter(Boolean)
-            : []),
+        process.env.CLIENT_URL,
     ];
 
     io = new Server(httpServer , {
         cors : {
-            origin : allowedOrigins,
+            origin : allowedOrigins.filter(Boolean),
             credentials : true
         }
     })
